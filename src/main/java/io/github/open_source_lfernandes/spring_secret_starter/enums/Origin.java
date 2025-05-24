@@ -1,9 +1,9 @@
 package io.github.open_source_lfernandes.spring_secret_starter.enums;
 
 /**
- * Origin is an enum that represents the source of the secrets.
- * Currently, it only supports AWS as a source.
+ * The Origin enum represents the origin of a secret.
+ * It can be either AWS or CUSTOM.
  */
 public enum Origin {
-    AWS
+    AWS, CUSTOM
 }

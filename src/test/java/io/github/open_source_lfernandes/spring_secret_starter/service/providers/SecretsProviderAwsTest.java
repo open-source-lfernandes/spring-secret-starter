@@ -4,6 +4,8 @@ import cloud.localstack.ServiceName;
 import cloud.localstack.awssdkv2.TestUtils;
 import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
+import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
+import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,7 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(LocalstackDockerExtension.class)
@@ -37,12 +42,19 @@ class SecretsProviderAwsTest {
 
     @Test
     void shouldReturnSecretFromClientAwsCorrectly() {
+        var optionalSecretDTO = Optional.of(
+                SecretDTO.builder()
+                        .origin(Origin.AWS)
+                        .key(key)
+                        .value(value)
+                        .build()
+        );
         assertNotNull(secretsProviderAws.get(key));
-        assertEquals(value, secretsProviderAws.get(key).value());
+        assertEquals(optionalSecretDTO, secretsProviderAws.get(key));
     }
 
     @Test
     void shouldNotReturnSecretFromClientAws() {
-        assertNull(secretsProviderAws.get("wrong-key"));
+        assertEquals(Optional.empty(), secretsProviderAws.get("wrong-key"));
     }
 }

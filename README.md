@@ -11,6 +11,7 @@ A Spring Boot starter for seamless integration with secret management services l
 - [Installation](#installation)
 - [Providers](#providers)
   - [AWS Secrets Manager](#aws-secrets-manager)
+  - [Custom](#custom)
 - [Usage](#usage)
     - [AWS Secrets Manager](#aws-secrets-manager)
 - [Configuration Properties](#configuration-properties)
@@ -47,6 +48,10 @@ implementation 'com.github.open-source-lfernandes:spring-secret-starter:1.0.0'
 AWS Secrets Manager is a service that helps you protect access to your applications, services, and IT resources without the upfront investment and on-going maintenance costs of operating your own infrastructure.
 
 For more information, visit the [AWS Secrets Manager Documentation](https://docs.aws.amazon.com/secretsmanager).
+
+### Custom
+You can create your own custom secret provider by implementing the `SecretProvider` interface. This allows you to integrate with any secret management service of your choice.
+
 ## Usage
 
 ### AWS-Secrets-Manager
@@ -59,6 +64,39 @@ spring:
         enabled: true
         region: us-east-1
 ````
+### Custom
+To use a custom secret provider, implement the `SecretProvider` interface and register it as a Spring bean. The starter will automatically detect and use your custom provider.
+
+```java 
+import java.util.Optional;
+
+@Component
+public class SecretsProviderCustom implements SecretsProvider {
+
+  private final YourCustomService yourCustomService;
+
+  public SecretsProviderCustom(YourCustomService yourCustomService) {
+    this.yourCustomService = yourCustomService;
+  }
+
+  @Override
+  public Origin getOrigin() {
+    return Origin.CUSTOM;
+  }
+
+  @Override
+  public Optional<SecretDTO> get(String key) {
+    return Optional.of(
+            SecretDTO.builder()
+                    .origin(getOrigin())
+                    .key(key)
+                    .value(yourCustomService.getSecretValue(key))
+                    .build()
+    );
+  }
+}
+
+```
 
 ## Configuration Properties
 

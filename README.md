@@ -49,7 +49,7 @@ AWS Secrets Manager is a service that helps you protect access to your applicati
 For more information, visit the [AWS Secrets Manager Documentation](https://docs.aws.amazon.com/secretsmanager).
 ## Usage
 
-### Basic Configuration
+### AWS-Secrets-Manager
 Add the following to your `application.yml`:
 ```yaml
 spring:

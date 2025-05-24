@@ -8,6 +8,8 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException;
 
+import java.util.Optional;
+
 /**
  * SecretsProviderAws is an implementation of the SecretsProvider interface
  * that retrieves secrets from AWS Secrets Manager.
@@ -27,7 +29,7 @@ public class SecretsProviderAws implements SecretsProvider {
     }
 
     @Override
-    public SecretDTO get(String key) {
+    public Optional<SecretDTO> get(String key) {
         try {
             var request = GetSecretValueRequest.builder()
                 .secretId(key)
@@ -35,14 +37,16 @@ public class SecretsProviderAws implements SecretsProvider {
 
             var response = client.getSecretValue(request);
 
-            return SecretDTO.builder()
-                .origin(getOrigin())
-                .key(key)
-                .value(response.secretString())
-                .build();
+            return Optional.of(
+                    SecretDTO.builder()
+                            .origin(getOrigin())
+                            .key(key)
+                            .value(response.secretString())
+                            .build()
+            );
         } catch (ResourceNotFoundException exception) {
-            log.warn("stage=secret-not-found-in-aws, key={}", key);
-            return null;
+            log.error("stage=secret-not-found-in-aws, key={}", key);
+            return Optional.empty();
         }
     }
 }

@@ -35,7 +35,8 @@ public class SecretsManagerService {
 
         return services.stream()
                 .map(service -> service.get(key))
-                .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
@@ -53,8 +54,7 @@ public class SecretsManagerService {
         return services.stream()
                 .filter(service -> service.getOrigin().equals(origin))
                 .findFirst()
-                .map(service -> service.get(key));
-
+                .flatMap(service -> service.get(key));
     }
 
     /**
@@ -66,10 +66,7 @@ public class SecretsManagerService {
      * @return the SecretDTO object containing the secret
      * @throws SecretNotFoundException if the secret is not found
      */
-    public SecretDTO getOrFailure(Origin origin, String key) {
-        Objects.requireNonNull(origin, Messages.ORIGIN_CANNOT_BE_BULL.getDescription());
-        Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
-
+    public SecretDTO getOrFailure(Origin origin, String key) throws SecretNotFoundException {
         return get(origin, key).orElseThrow(() -> new SecretNotFoundException(key));
     }
 

@@ -17,6 +17,7 @@ A Spring Boot starter for seamless integration with secret management services l
     - [Custom](#custom)
 - [Configuration Properties](#configuration-properties)
 - [Examples](#examples)
+- [Next Steps](#next-steps)
 - [Contributing](#contributing)
 
 ## Features
@@ -132,6 +133,12 @@ public class MyService {
     }
 }
 ```
+## Next Steps
+Next Providers to be implemented:
+- HashiCorp Vault
+- Azure Key Vault
+- Google Cloud Secret Manager
+
 ## Contributing
 We welcome contributions! Please follow these steps:
 

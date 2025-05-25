@@ -14,6 +14,7 @@ A Spring Boot starter for seamless integration with secret management services l
   - [Custom](#custom)
 - [Usage](#usage)
     - [AWS Secrets Manager](#aws-secrets-manager)
+    - [Custom](#custom)
 - [Configuration Properties](#configuration-properties)
 - [Examples](#examples)
 - [Contributing](#contributing)

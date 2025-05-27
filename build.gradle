@@ -1,10 +1,10 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.5'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'maven-publish'
-	id 'signing'
-	id 'org.jreleaser' version '1.18.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'maven-publish'
+    id 'signing'
+    id 'org.jreleaser' version '1.18.0'
 }
 
 group = 'io.github.open-source-lfernandes'
@@ -12,93 +12,95 @@ description = 'A Spring Boot starter for seamless integration with secret manage
 version = '1.0.0'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-autoconfigure:3.4.1'
-	implementation 'org.springframework.boot:spring-boot-configuration-processor:3.4.1'
-	implementation 'org.springframework.boot:spring-boot-starter-aop:3.4.1'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:3.4.1'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:3.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-aop:3.4.1'
 
-	// providers
-	implementation 'software.amazon.awssdk:secretsmanager:2.31.47'
+    // providers
+    implementation 'software.amazon.awssdk:secretsmanager:2.31.47'
 
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
-	implementation 'com.google.guava:guava:33.4.8-jre'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
+    implementation 'com.google.guava:guava:33.4.8-jre'
 
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testImplementation 'org.assertj:assertj-core:3.27.3'
-	testImplementation 'cloud.localstack:localstack-utils:0.2.23'
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.assertj:assertj-core:3.27.3'
+    testImplementation 'cloud.localstack:localstack-utils:0.2.23'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 tasks.bootJar {
-	enabled = false
+    enabled = false
 }
 
 tasks.jar {
-	enabled = true
+    enabled = true
 }
 
 java {
-	withJavadocJar()
-	withSourcesJar()
+    withJavadocJar()
+    withSourcesJar()
 }
 
 publishing {
-	repositories {
-		maven {
-			url = layout.buildDirectory.dir('staging-deploy')
-		}
-	}
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }
 
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			pom {
-				name = 'Spring Secret Starter'
-				description = 'A Spring Boot starter for seamless integration with secret management services like AWS Secrets Manager, HashiCorp Vault, and more.'
-				url = 'https://github.com/open-source-lfernandes/spring-secret-starter'
-				licenses {
-					license {
-						name = 'Apache License 2.0'
-						url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-					}
-				}
-				developers {
-					developer {
-						id = 'open-source-lfernandes'
-						name = 'Lucas Fernandes'
-						email = 'lucas.rj.fernandes@gmail.com'
-					}
-				}
-				scm {
-					connection = 'scm:git:git://github.com/open-source-lfernandes/spring-secret-starter.git'
-					developerConnection = 'scm:git:ssh://github.com:open-source-lfernandes/spring-secret-starter.git'
-					url = 'https://github.com/open-source-lfernandes/spring-secret-starter/tree/main'
-				}
-			}
-		}
-	}
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Spring Secret Starter'
+                description = 'A Spring Boot starter for seamless integration with secret management services like AWS Secrets Manager, HashiCorp Vault, and more.'
+                url = 'https://github.com/open-source-lfernandes/spring-secret-starter'
+                licenses {
+                    license {
+                        name = 'Apache License 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'open-source-lfernandes'
+                        name = 'Lucas Fernandes'
+                        email = 'lucas.rj.fernandes@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/open-source-lfernandes/spring-secret-starter.git'
+                    developerConnection = 'scm:git:ssh://github.com:open-source-lfernandes/spring-secret-starter.git'
+                    url = 'https://github.com/open-source-lfernandes/spring-secret-starter/tree/main'
+                }
+            }
+        }
+    }
 }
+
+apply from : "gradle/plugins/jreleaser.gradle"

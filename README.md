@@ -42,7 +42,7 @@ Add the dependency to your `pom.xml`:
 Or for Gradle:
 
 ```groovy
-implementation 'com.github.open-source-lfernandes:spring-secret-starter:1.0.0'
+implementation 'com.github.open-source-lfernandes:spring-secret-starter:1.0.1'
 ```
 
 ## Providers

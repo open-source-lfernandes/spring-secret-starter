@@ -5,5 +5,12 @@ package io.github.open_source_lfernandes.spring_secret_starter.enums;
  * It can be either AWS or CUSTOM.
  */
 public enum Origin {
-    AWS, CUSTOM
+    /**
+     * AWS indicates that the secret is sourced from AWS Secrets Manager.
+     */
+    AWS,
+    /**
+     * CUSTOM indicates that the secret is sourced from a custom provider.
+     */
+    CUSTOM
 }

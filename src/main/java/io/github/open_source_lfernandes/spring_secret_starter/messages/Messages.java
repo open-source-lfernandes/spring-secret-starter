@@ -9,7 +9,13 @@ import lombok.Getter;
 @Getter
 public enum Messages {
 
+    /**
+     * Error messages used in the application.
+     */
     KEY_CANNOT_BE_NULL("Key cannot be null"),
+    /**
+     * Error message for when the secret value is null.
+     */
     ORIGIN_CANNOT_BE_BULL("Origin cannot be null");
 
     private final String description;

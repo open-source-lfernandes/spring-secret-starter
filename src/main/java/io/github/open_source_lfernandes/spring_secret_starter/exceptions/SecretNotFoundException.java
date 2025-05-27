@@ -8,6 +8,12 @@ package io.github.open_source_lfernandes.spring_secret_starter.exceptions;
  */
 public class SecretNotFoundException extends Exception {
 
+    /**
+     * Constructs a new SecretNotFoundException with a message indicating
+     * that the secret with the specified key was not found.
+     *
+     * @param key the key of the secret that was not found
+     */
     public SecretNotFoundException(
         String key
     ) {

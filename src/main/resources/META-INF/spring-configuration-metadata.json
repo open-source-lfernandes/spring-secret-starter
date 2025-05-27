@@ -9,9 +9,26 @@
             "name": "spring.secrets.aws.secrets-manager",
             "type": "io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsManagerProperties",
             "sourceType": "io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsManagerProperties"
+        },
+        {
+            "name": "spring.secrets.cache",
+            "type": "io.github.open_source_lfernandes.spring_secret_starter.properties.CacheProperties",
+            "sourceType": "io.github.open_source_lfernandes.spring_secret_starter.properties.CacheProperties"
         }
     ],
     "properties": [
+        {
+            "name": "spring.secrets.aws.secrets-manager.keys",
+            "type": "java.util.List<java.lang.String>",
+            "description": "List of secrets.",
+            "defaultValue": "[]"
+        },
+        {
+            "name": "spring.secrets.aws.secrets-manager.caching-on-startup",
+            "type": "java.lang.Boolean",
+            "description": "Enable Store All Secrets in local cache.",
+            "defaultValue": "false"
+        },
         {
             "name": "spring.secrets.aws.secrets-manager.enabled",
             "type": "java.lang.Boolean",
@@ -28,6 +45,24 @@
             "name": "spring.secrets.aws.secrets-manager.endpoint",
             "type": "java.lang.String",
             "description": "AWS Endpoint.",
+            "defaultValue": ""
+        },
+        {
+            "name": "spring.secrets.cache.secrets-manager.keys",
+            "type": "java.util.List<java.lang.String>",
+            "description": "List of secrets.",
+            "defaultValue": "[]"
+        },
+        {
+            "name": "spring.secrets.cache.secrets-manager.caching-on-startup",
+            "type": "java.lang.Boolean",
+            "description": "Enable Store All Secrets in local cache.",
+            "defaultValue": "false"
+        },
+        {
+            "name": "spring.secrets.cache.secrets-manager.enabled",
+            "type": "java.lang.Boolean",
+            "description": "Enable Cache Secrets Provider.",
             "defaultValue": ""
         }
     ],

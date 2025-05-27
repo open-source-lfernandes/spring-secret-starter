@@ -5,5 +5,5 @@ package io.github.open_source_lfernandes.spring_secret_starter.enums;
  * It can be either AWS or CUSTOM.
  */
 public enum Origin {
-    AWS, CUSTOM
+    AWS, CUSTOM, CACHE
 }

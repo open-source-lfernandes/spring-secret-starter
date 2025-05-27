@@ -5,7 +5,9 @@ import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
+import software.amazon.awssdk.services.secretsmanager.model.DeleteSecretRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import software.amazon.awssdk.services.secretsmanager.model.PutSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException;
 
 import java.util.Optional;
@@ -48,5 +50,23 @@ public class SecretsProviderAws implements SecretsProvider {
             log.error("stage=secret-not-found-in-aws, key={}", key);
             return Optional.empty();
         }
+    }
+
+    @Override
+    public SecretDTO put(SecretDTO secretDTO) {
+        var request = PutSecretValueRequest.builder()
+                .secretId(createKey(secretDTO.key()))
+                .secretString(secretDTO.value())
+                .build();
+        client.putSecretValue(request);
+        return secretDTO;
+    }
+
+    @Override
+    public void delete(String key) {
+        var request = DeleteSecretRequest.builder()
+                .secretId(key)
+                .build();
+        client.deleteSecret(request);
     }
 }

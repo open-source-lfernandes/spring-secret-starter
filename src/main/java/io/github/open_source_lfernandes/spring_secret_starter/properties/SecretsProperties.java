@@ -9,12 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.secrets")
 public record SecretsProperties(
-        AWS aws
+        AwsProperties aws,
+        CacheProperties cache
 ) {
-    /**
-     * AWS is a record that holds the properties for configuring
-     * the AWS Secrets Manager.
-     * It contains fields for enabling/disabling the manager and its properties.
-     */
-    public record AWS (SecretsManagerProperties secretsManager){}
+
 }

@@ -106,7 +106,7 @@ The following table explains the configuration properties available for the Spri
 
 | Property                                      | Type          | Description                          | Default Value |
 |-----------------------------------------------|---------------|--------------------------------------|---------------|
-| `spring.secrets.aws.secrets-manager.enabled`  | `Boolean`     | Enable AWS Secrets Manager.          | true          |
+| `spring.secrets.aws.secrets-manager.enabled`  | `Boolean`     | Enable AWS Secrets Manager.          |               |
 | `spring.secrets.aws.secrets-manager.region`   | `String`      | AWS Region.                          |               |
 | `spring.secrets.aws.secrets-manager.endpoint` | `String`      | AWS Endpoint.                        |               |
 

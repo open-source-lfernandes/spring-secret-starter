@@ -54,8 +54,8 @@ public class SecretsServiceAwsAutoConfiguration {
      * @return a SecretsProviderAws instance
      */
     @Bean
-    public SecretsProviderAws secretsProviderAws() throws URISyntaxException {
-        return new SecretsProviderAws(secretsManagerClient());
+    public SecretsProviderAws secretsProviderAws(SecretsManagerClient secretsManagerClient) {
+        return new SecretsProviderAws(props.aws().secretsManager().getOrder(), secretsManagerClient);
     }
 
     /**

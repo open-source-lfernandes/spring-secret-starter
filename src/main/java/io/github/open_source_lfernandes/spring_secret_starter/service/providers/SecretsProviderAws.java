@@ -2,7 +2,6 @@ package io.github.open_source_lfernandes.spring_secret_starter.service.providers
 
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
@@ -15,13 +14,23 @@ import java.util.Optional;
  * that retrieves secrets from AWS Secrets Manager.
  */
 @Slf4j
-@RequiredArgsConstructor
-public class SecretsProviderAws implements SecretsProvider {
+public class SecretsProviderAws extends AbstractSecretsProvider {
 
     /**
      * The AWS Secrets Manager client.
      */
     private final SecretsManagerClient client;
+
+/**
+     * Constructs a SecretsProviderAws with the specified order and AWS Secrets Manager client.
+     *
+     * @param order  the order of the provider, used to determine the precedence of secret retrieval
+     * @param client the AWS Secrets Manager client
+     */
+    public SecretsProviderAws(Integer order, SecretsManagerClient client) {
+        super(order);
+        this.client = client;
+    }
 
     @Override
     public Origin getOrigin() {

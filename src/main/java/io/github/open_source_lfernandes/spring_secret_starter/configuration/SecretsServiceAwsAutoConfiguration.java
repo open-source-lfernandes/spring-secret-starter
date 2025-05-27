@@ -41,41 +41,44 @@ public class SecretsServiceAwsAutoConfiguration {
      */
     @PostConstruct
     public void postConstruct() {
-        log.info("Secret-Manager-AWS-Initiated, enabled={}, region={}, endpoint={}", props.aws().secretsManager().enabled(),
-                props.aws().secretsManager().region(), props.aws().secretsManager().endpoint());
+        log.info("Secret-Manager-AWS-Initiated, enabled={}, region={}, endpoint={}, order={}",
+                props.aws().secretsManager().getEnabled(),
+                props.aws().secretsManager().getRegion(), props.aws().secretsManager().getEndpoint(),
+                props.aws().secretsManager().getOrder());
     }
 
     /**
      * Creates a SecretsProviderAws bean if the AWS Secrets Manager is enabled.
+     *
      * @return a SecretsProviderAws instance
-     * @throws URISyntaxException if the endpoint URI is invalid
      */
     @Bean
-    public SecretsProviderAws secretsProviderAws() throws URISyntaxException {
-        return new SecretsProviderAws(secretsManagerClient());
+    public SecretsProviderAws secretsProviderAws(SecretsManagerClient secretsManagerClient) {
+        return new SecretsProviderAws(props.aws().secretsManager().getOrder(), secretsManagerClient);
     }
 
     /**
      * Creates a SecretsManagerClient bean if it is not already defined.
+     *
      * @return a SecretsManagerClient instance
      * @throws URISyntaxException if the endpoint URI is invalid
      */
     @Bean
     @ConditionalOnMissingBean(SecretsManagerClient.class)
-    public SecretsManagerClient secretsManagerClient() throws URISyntaxException {
-        var builder = SecretsManagerClient.builder()
-                .credentialsProvider(defaultCredentialsProvider());
-        if (hasText(props.aws().secretsManager().endpoint())) {
-            builder.endpointOverride(new URI(props.aws().secretsManager().endpoint()));
+    public SecretsManagerClient secretsManagerClient(DefaultCredentialsProvider defaultCredentialsProvider) throws URISyntaxException {
+        var builder = SecretsManagerClient.builder().credentialsProvider(defaultCredentialsProvider);
+        if (hasText(props.aws().secretsManager().getEndpoint())) {
+            builder.endpointOverride(new URI(props.aws().secretsManager().getEndpoint()));
         }
-        if (hasText(props.aws().secretsManager().region())) {
-            builder.region(Region.of(props.aws().secretsManager().region()));
+        if (hasText(props.aws().secretsManager().getRegion())) {
+            builder.region(Region.of(props.aws().secretsManager().getRegion()));
         }
         return builder.build();
     }
 
     /**
      * Creates a DefaultCredentialsProvider bean if it is not already defined.
+     *
      * @return a DefaultCredentialsProvider instance
      */
     @Bean

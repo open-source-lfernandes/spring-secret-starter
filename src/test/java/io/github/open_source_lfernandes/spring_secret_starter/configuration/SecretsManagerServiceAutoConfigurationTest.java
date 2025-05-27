@@ -1,7 +1,7 @@
 package io.github.open_source_lfernandes.spring_secret_starter.configuration;
 
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
-import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProvider;
+import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import io.github.open_source_lfernandes.spring_secret_starter.service.SecretsManagerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class SecretsManagerServiceAutoConfigurationTest {
     @Autowired
     private SecretsManagerService secretsManager;
     @Autowired
-    private Set<SecretsProvider> providers;
+    private Set<AbstractSecretsProvider> providers;
 
     @Test
     void shouldCreateBeanSecretManagerService() {

@@ -16,6 +16,7 @@ A Spring Boot starter for seamless integration with secret management services l
     - [AWS Secrets Manager](#aws-secrets-manager)
     - [Custom](#custom)
 - [Configuration Properties](#configuration-properties)
+- [Specifying Provider Order](#specifying-provider-order)
 - [Examples](#examples)
 - [Next Steps](#next-steps)
 - [Contributing](#contributing)
@@ -24,8 +25,8 @@ A Spring Boot starter for seamless integration with secret management services l
 
 - **Abstract Secret Retrieval Logic**: Decoupled core implementation with provider-specific abstraction layer for easy extensibility
 - **Multi-provider Support**: Integrate with AWS Secrets Manager, HashiCorp Vault, and other secret management services
-- **Automatic Secret Injection**: Automatically inject secrets into your Spring properties
 - **Custom Providers**: Easily extend with your own secret provider implementations
+- **Provider Order Configuration**: Specify the order in which providers are executed for secret retrieval using configuration properties
 
 ## Installation
 
@@ -35,7 +36,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>com.github.open-source-lfernandes</groupId>
     <artifactId>spring-secret-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 Or for Gradle:
@@ -67,19 +68,21 @@ spring:
         region: us-east-1
 ````
 ### Custom
-To use a custom secret provider, implement the `SecretProvider` interface and register it as a Spring bean. The starter will automatically detect and use your custom provider.
+To use a custom secret provider, extends the `AbstractSecretsProvider` class and register it as a Spring bean. The starter will automatically detect and use your custom provider.
 
 ```java 
 import java.util.Optional;
 
 @Component
-public class SecretsProviderCustom implements SecretsProvider {
+public class SecretsProviderCustom extends AbstractSecretsProvider {
 
   private final YourCustomService yourCustomService;
 
-  public SecretsProviderCustom(YourCustomService yourCustomService) {
-    this.yourCustomService = yourCustomService;
+  public SecretsProviderCustom(Integer order, YourCustomService yourCustomService) {
+      super(order);
+      this.yourCustomService = yourCustomService;
   }
+  
 
   @Override
   public Origin getOrigin() {
@@ -104,11 +107,26 @@ public class SecretsProviderCustom implements SecretsProvider {
 
 The following table explains the configuration properties available for the Spring Secret Starter:
 
-| Property                                      | Type          | Description                          | Default Value |
-|-----------------------------------------------|---------------|--------------------------------------|---------------|
-| `spring.secrets.aws.secrets-manager.enabled`  | `Boolean`     | Enable AWS Secrets Manager.          |               |
-| `spring.secrets.aws.secrets-manager.region`   | `String`      | AWS Region.                          |               |
-| `spring.secrets.aws.secrets-manager.endpoint` | `String`      | AWS Endpoint.                        |               |
+| Property                                      | Type      | Description                            | Default Value |
+|-----------------------------------------------|-----------|----------------------------------------|---------------|
+| `spring.secrets.aws.secrets-manager.enabled`  | `Boolean` | Enable AWS Secrets Manager.            | false         |
+| `spring.secrets.aws.secrets-manager.region`   | `String`  | AWS Region.                            | us-east-1     |
+| `spring.secrets.aws.secrets-manager.endpoint` | `String`  | AWS Endpoint.                          |               |
+| `spring.secrets.aws.secrets-manager.order`    | `Integer` | Providers Order that will be executed. | 99999         |
+
+## Specifying Provider Order
+To specify the order in which providers are executed, set the *order* property in your *application.yml* or *application.properties* file. Providers with lower order values are executed first.  Example:
+
+Example:
+```yaml
+spring:
+  secrets:
+    aws:
+      secrets-manager:
+        enabled: true
+        region: us-east-1
+        order: 1
+```        
 
 ## Examples
 
@@ -138,6 +156,9 @@ Next Providers to be implemented:
 - HashiCorp Vault
 - Azure Key Vault
 - Google Cloud Secret Manager
+- Secret Cache Provider
+  - Enabling caching of secrets to reduce the number of calls to the secret management service, improving performance and reducing costs.
+  - Enabling caching on startup to preload secrets into the cache, ensuring they are available immediately when the application starts.
 
 ## Contributing
 We welcome contributions! Please follow these steps:

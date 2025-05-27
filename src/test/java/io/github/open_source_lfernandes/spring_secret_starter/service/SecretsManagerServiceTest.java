@@ -3,7 +3,7 @@ package io.github.open_source_lfernandes.spring_secret_starter.service;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
-import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProvider;
+import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProviderAws;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,37 +28,57 @@ class SecretsManagerServiceTest {
     @Mock
     SecretsProviderAws secretsProviderAws;
 
+    CustomSecretsProvider customSecretsProvider = new CustomSecretsProvider(1);
+
     @BeforeEach
     void setUpProviders() {
-        final Set<SecretsProvider> providers = Set.of(secretsProviderAws);
+        final List<AbstractSecretsProvider> providers = List.of(secretsProviderAws, customSecretsProvider);
         secretsManagerService = new SecretsManagerService(providers);
     }
 
     @Test
     void shouldReturnSecretFromList() {
         final var key = "key";
-        final var secretDTOExpected = Optional.of(
+        final var secretDTOAwsExpected = SecretDTO.builder()
+                .origin(Origin.AWS)
+                .key(key)
+                .value("secret")
+                .build();
+
+        final List<SecretDTO> listExpected = List.of(
+                secretDTOAwsExpected,
                 SecretDTO.builder()
+                        .origin(Origin.CUSTOM)
                         .key(key)
-                        .value("secret")
+                        .value("custom-value")
                         .build()
         );
-        when(secretsProviderAws.get(key)).thenReturn(secretDTOExpected);
+        when(secretsProviderAws.get(key)).thenReturn(Optional.of(secretDTOAwsExpected));
 
-        Set<SecretDTO> setKeysResponse = secretsManagerService.get(key);
+        List<SecretDTO> setKeysResponse = secretsManagerService.get(key);
 
         assertThat(setKeysResponse)
                 .isNotEmpty()
-                .containsExactly(secretDTOExpected.get());
+                .isEqualTo(listExpected);
     }
 
     @Test
-    void shouldNotReturnSecretFromList() {
+    void shouldReturnSecretOnlyCustomProviderFromList() {
+        final List<SecretDTO> listExpected = List.of(
+                SecretDTO.builder()
+                        .origin(Origin.CUSTOM)
+                        .key("key")
+                        .value("custom-value")
+                        .build()
+        );
+
         when(secretsProviderAws.get(anyString())).thenReturn(Optional.empty());
 
-        Set<SecretDTO> setKeysResponse = secretsManagerService.get("key");
+        List<SecretDTO> setKeysResponse = secretsManagerService.get("key");
 
-        assertThat(setKeysResponse).isEmpty();
+        assertThat(setKeysResponse)
+                .isNotEmpty()
+                .isEqualTo(listExpected);
     }
 
     @Test
@@ -114,5 +134,27 @@ class SecretsManagerServiceTest {
         when(secretsProviderAws.get(anyString())).thenReturn(Optional.empty());
 
         assertThrows(SecretNotFoundException.class, () -> secretsManagerService.getOrFailure(Origin.AWS, "key"));
+    }
+
+    static class CustomSecretsProvider extends AbstractSecretsProvider {
+
+        public CustomSecretsProvider(Integer order) {
+            super(order);
+        }
+
+        @Override
+        public Origin getOrigin() {
+            return Origin.CUSTOM;
+        }
+
+        @Override
+        public Optional<SecretDTO> get(String key) {
+            return Optional.of(SecretDTO.builder()
+                    .origin(Origin.CUSTOM)
+                    .key(key)
+                    .value("custom-value")
+                    .build()
+            );
+        }
     }
 }

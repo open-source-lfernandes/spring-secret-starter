@@ -13,16 +13,22 @@
     ],
     "properties": [
         {
+            "name": "spring.secrets.aws.secrets-manager.order",
+            "type": "java.lang.Integer",
+            "description": "Providers Order that will be executed.",
+            "defaultValue": 99999
+        },
+        {
             "name": "spring.secrets.aws.secrets-manager.enabled",
             "type": "java.lang.Boolean",
             "description": "Enable AWS Secrets Manager.",
-            "defaultValue": ""
+            "defaultValue": "false"
         },
         {
             "name": "spring.secrets.aws.secrets-manager.region",
             "type": "java.lang.Boolean",
             "description": "AWS Region.",
-            "defaultValue": ""
+            "defaultValue": "us-east-1"
         },
         {
             "name": "spring.secrets.aws.secrets-manager.endpoint",

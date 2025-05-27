@@ -4,12 +4,12 @@ import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
 import io.github.open_source_lfernandes.spring_secret_starter.messages.Messages;
-import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProvider;
+import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -20,24 +20,24 @@ import java.util.stream.Collectors;
 public class SecretsManagerService {
 
     /**
-     * The set of secrets providers.
+     * The list of secrets providers.
      */
-    private final Set<SecretsProvider> services;
+    private final List<AbstractSecretsProvider> services;
 
     /**
      * Retrieves a secret by its key from all available providers.
      *
      * @param key the key of the secret to retrieve
-     * @return a set of SecretDTO objects containing the secrets
+     * @return a list of SecretDTO objects containing the secrets
      */
-    public Set<SecretDTO> get(String key) {
+    public List<SecretDTO> get(String key) {
         Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
 
         return services.stream()
                 .map(service -> service.get(key))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**

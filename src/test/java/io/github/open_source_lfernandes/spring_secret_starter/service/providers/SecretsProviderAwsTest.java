@@ -37,7 +37,7 @@ class SecretsProviderAwsTest {
                 .build();
         secretsManagerClient.createSecret(createRequest);
 
-        secretsProviderAws = new SecretsProviderAws(secretsManagerClient);
+        secretsProviderAws = new SecretsProviderAws(0, secretsManagerClient);
     }
 
     @Test

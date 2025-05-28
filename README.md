@@ -200,6 +200,32 @@ public class MyService {
 }
 ```
 
+### SecretDTO Explanation
+
+The SecretDTO class is a data transfer object (DTO) that represents a secret. It is implemented as a Java record, which is a compact and immutable data structure. Here's what the class represents:  
+
+*Fields:*
+- origin: Represents the source or origin of the secret (e.g., AWS Secrets Manager, HashiCorp Vault, etc.). It is of type Origin, which is likely an enum.
+- key: The unique identifier or key for the secret.
+- value: The actual value of the secret, stored in JSON format. This allows complex objects to be serialized and stored as a string.
+
+*Purpose*:  
+The class is designed to encapsulate the details of a secret in a structured way, making it easier to transfer and manipulate secret data within the application.
+
+```java
+  /**
+ * SecretDTO is a data transfer object that represents a secret.
+ * It contains the origin, key, and value of the secret.
+ *
+ * <p>The {@code value} field represents the secret's value in JSON format.
+ * This ensures that complex objects can be serialized and stored as a string.
+ */
+@Builder
+public record SecretDTO(Origin origin, String key, String value) {
+}
+
+```
+
 ## Next Steps
 
 Next Providers to be implemented:

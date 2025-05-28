@@ -1,8 +1,8 @@
 package io.github.open_source_lfernandes.spring_secret_starter.configuration;
 
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
-import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import io.github.open_source_lfernandes.spring_secret_starter.service.SecretsManagerService;
+import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +12,23 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.Set;
+import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
-@ContextConfiguration(classes = {SecretsManagerServiceAutoConfiguration.class, SecretsServiceAwsAutoConfiguration.class})
+@ContextConfiguration(classes = {
+        SecretsManagerServiceAutoConfiguration.class,
+        SecretsServiceAwsAutoConfiguration.class,
+        ObjectMapperConfiguration.class
+})
 @EnableConfigurationProperties(SecretsProperties.class)
 class SecretsManagerServiceAutoConfigurationTest {
 
     @Autowired
     private SecretsManagerService secretsManager;
     @Autowired
-    private Set<AbstractSecretsProvider> providers;
+    private List<AbstractSecretsProvider> providers;
 
     @Test
     void shouldCreateBeanSecretManagerService() {

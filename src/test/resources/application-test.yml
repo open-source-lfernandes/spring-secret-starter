@@ -2,6 +2,13 @@ spring:
   secrets:
     aws:
       secrets-manager:
+        order: 1
         enabled: true
         endpoint: http://localhost:4566
         region: us-east-1
+    vault:
+      order: 2
+      enabled: true
+      uri: http://localhost:8200
+      token: testtoken
+      path: secret/data/test

@@ -9,7 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.secrets")
 public record SecretsProperties(
-        AWS aws
+        AWS aws,
+        SecretsVaultProperties vault
 ) {
     /**
      * AWS is a record that holds the properties for configuring

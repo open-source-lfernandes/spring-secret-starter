@@ -9,7 +9,7 @@ plugins {
 
 group = 'io.github.open-source-lfernandes'
 description = 'A Spring Boot starter for seamless integration with secret management services like AWS Secrets Manager, HashiCorp Vault, and more.'
-version = '1.0.1'
+version = '1.1.0'
 
 java {
     toolchain {
@@ -34,8 +34,11 @@ dependencies {
 
     // providers
     implementation 'software.amazon.awssdk:secretsmanager:2.31.47'
+    implementation 'org.springframework.vault:spring-vault-core:3.2.0'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.19.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.19.0'
     implementation 'com.google.guava:guava:33.4.8-jre'
 
     compileOnly 'org.projectlombok:lombok'
@@ -45,6 +48,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.assertj:assertj-core:3.27.3'
     testImplementation 'cloud.localstack:localstack-utils:0.2.23'
+    testImplementation 'org.testcontainers:vault:1.10.5'
+    testImplementation 'org.testcontainers:junit-jupiter:1.10.5'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }

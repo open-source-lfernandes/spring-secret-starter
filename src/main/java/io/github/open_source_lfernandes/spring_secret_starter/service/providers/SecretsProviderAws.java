@@ -1,5 +1,6 @@
 package io.github.open_source_lfernandes.spring_secret_starter.service.providers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +22,15 @@ public class SecretsProviderAws extends AbstractSecretsProvider {
      */
     private final SecretsManagerClient client;
 
-/**
+    /**
      * Constructs a SecretsProviderAws with the specified order and AWS Secrets Manager client.
      *
-     * @param order  the order of the provider, used to determine the precedence of secret retrieval
-     * @param client the AWS Secrets Manager client
+     * @param objectMapper the ObjectMapper for JSON serialization/deserialization
+     * @param order        the order of the provider, used to determine the precedence of secret retrieval
+     * @param client       the AWS Secrets Manager client for interacting with AWS Secrets Manager
      */
-    public SecretsProviderAws(Integer order, SecretsManagerClient client) {
-        super(order);
+    public SecretsProviderAws(ObjectMapper objectMapper, Integer order, SecretsManagerClient client) {
+        super(objectMapper, order);
         this.client = client;
     }
 
@@ -50,7 +52,7 @@ public class SecretsProviderAws extends AbstractSecretsProvider {
                     SecretDTO.builder()
                             .origin(getOrigin())
                             .key(key)
-                            .value(response.secretString())
+                            .value(convertSecretValueToJson(response.secretString()))
                             .build()
             );
         } catch (ResourceNotFoundException exception) {

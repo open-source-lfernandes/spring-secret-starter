@@ -1,5 +1,6 @@
 package io.github.open_source_lfernandes.spring_secret_starter.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProviderAws;
 import jakarta.annotation.PostConstruct;
@@ -35,6 +36,10 @@ public class SecretsServiceAwsAutoConfiguration {
      * The AWS Secrets Manager properties.
      */
     private final SecretsProperties props;
+    /**
+     * The ObjectMapper instance used for serializing and deserializing JSON data.
+     */
+    private final ObjectMapper objectMapper;
 
     /**
      * Post construct method to log the initialization of the AWS Secrets Manager.
@@ -55,7 +60,7 @@ public class SecretsServiceAwsAutoConfiguration {
      */
     @Bean
     public SecretsProviderAws secretsProviderAws(SecretsManagerClient secretsManagerClient) {
-        return new SecretsProviderAws(props.aws().secretsManager().getOrder(), secretsManagerClient);
+        return new SecretsProviderAws(objectMapper, props.aws().secretsManager().getOrder(), secretsManagerClient);
     }
 
     /**

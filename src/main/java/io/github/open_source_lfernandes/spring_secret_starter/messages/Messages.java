@@ -10,6 +10,10 @@ import lombok.Getter;
 public enum Messages {
 
     /**
+     * Error message for when the secret value is not found.
+     */
+    JSON_PARSE_SECRET_VALUE_ERROR("Error parsing secret value from JSON"),
+    /**
      * Error messages used in the application.
      */
     KEY_CANNOT_BE_NULL("Key cannot be null"),

@@ -11,7 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
-@ContextConfiguration(classes = SecretsServiceAwsAutoConfiguration.class)
+@ContextConfiguration(classes = {SecretsServiceAwsAutoConfiguration.class, ObjectMapperConfiguration.class})
 @EnableConfigurationProperties(SecretsProperties.class)
 class SecretServiceAwsAutoConfigurationTest {
 

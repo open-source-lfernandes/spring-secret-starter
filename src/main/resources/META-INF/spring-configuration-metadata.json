@@ -9,6 +9,11 @@
             "name": "spring.secrets.aws.secrets-manager",
             "type": "io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsManagerProperties",
             "sourceType": "io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsManagerProperties"
+        },
+        {
+            "name": "spring.secrets.vault",
+            "type": "io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsVaultProperties",
+            "sourceType": "io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsVaultProperties"
         }
     ],
     "properties": [
@@ -34,6 +39,36 @@
             "name": "spring.secrets.aws.secrets-manager.endpoint",
             "type": "java.lang.String",
             "description": "AWS Endpoint.",
+            "defaultValue": ""
+        },
+        {
+            "name": "spring.secrets.vault.enabled",
+            "type": "java.lang.Boolean",
+            "description": "Enable Vault.",
+            "defaultValue": "false"
+        },
+        {
+            "name": "spring.secrets.vault.uri",
+            "type": "java.lang.String",
+            "description": "Vault Uri.",
+            "defaultValue": ""
+        },
+        {
+            "name": "spring.secrets.vault.order",
+            "type": "java.lang.Integer",
+            "description": "Providers Order that will be executed.",
+            "defaultValue": 99999
+        },
+        {
+            "name": "spring.secrets.vault.token",
+            "type": "java.lang.String",
+            "description": "Vault Token.",
+            "defaultValue": ""
+        },
+        {
+            "name": "spring.secrets.vault.path",
+            "type": "java.lang.String",
+            "description": "Vault Token.",
             "defaultValue": ""
         }
     ],

@@ -1,5 +1,6 @@
 package io.github.open_source_lfernandes.spring_secret_starter.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
@@ -139,7 +140,7 @@ class SecretsManagerServiceTest {
     static class CustomSecretsProvider extends AbstractSecretsProvider {
 
         public CustomSecretsProvider(Integer order) {
-            super(order);
+            super(new ObjectMapper(), order);
         }
 
         @Override

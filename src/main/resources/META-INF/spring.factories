@@ -1,3 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   io.github.open_source_lfernandes.spring_secret_starter.configuration.SecretsManagerServiceAutoConfiguration\
   io.github.open_source_lfernandes.spring_secret_starter.configuration.SecretsServiceAwsAutoConfiguration\
+  io.github.open_source_lfernandes.spring_secret_starter.configuration.SecretsServiceVaultAutoConfiguration\
+  io.github.open_source_lfernandes.spring_secret_starter.configuration.ObjectMapperConfiguration\

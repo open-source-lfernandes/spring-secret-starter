@@ -10,6 +10,10 @@ public enum Origin {
      */
     AWS,
     /**
+     * VAULT indicates that the secret is sourced from a secrets vault.
+     */
+    VAULT,
+    /**
      * CUSTOM indicates that the secret is sourced from a custom provider.
      */
     CUSTOM

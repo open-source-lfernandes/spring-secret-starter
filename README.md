@@ -21,6 +21,7 @@ Vault, and more.
 - [Configuration Properties](#configuration-properties)
 - [Specifying Provider Order](#specifying-provider-order)
 - [Examples](#examples)
+    - [SecretDTO Explanation](#secretdto-explanation)
 - [Next Steps](#next-steps)
 - [Contributing](#contributing)
 

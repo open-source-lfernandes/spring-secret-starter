@@ -21,7 +21,7 @@
             "name": "spring.secrets.aws.secrets-manager.order",
             "type": "java.lang.Integer",
             "description": "Providers Order that will be executed.",
-            "defaultValue": 99999
+            "defaultValue": "Integer.MAX_VALUE"
         },
         {
             "name": "spring.secrets.aws.secrets-manager.enabled",
@@ -57,7 +57,7 @@
             "name": "spring.secrets.vault.order",
             "type": "java.lang.Integer",
             "description": "Providers Order that will be executed.",
-            "defaultValue": 99999
+            "defaultValue": "Integer.MAX_VALUE"
         },
         {
             "name": "spring.secrets.vault.token",
@@ -68,7 +68,7 @@
         {
             "name": "spring.secrets.vault.path",
             "type": "java.lang.String",
-            "description": "Vault Token.",
+            "description": "Vault Path.",
             "defaultValue": ""
         }
     ],

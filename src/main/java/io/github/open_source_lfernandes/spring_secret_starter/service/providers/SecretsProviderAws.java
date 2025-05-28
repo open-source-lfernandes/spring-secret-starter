@@ -22,11 +22,12 @@ public class SecretsProviderAws extends AbstractSecretsProvider {
      */
     private final SecretsManagerClient client;
 
-/**
+    /**
      * Constructs a SecretsProviderAws with the specified order and AWS Secrets Manager client.
      *
-     * @param order  the order of the provider, used to determine the precedence of secret retrieval
-     * @param client the AWS Secrets Manager client
+     * @param objectMapper the ObjectMapper for JSON serialization/deserialization
+     * @param order        the order of the provider, used to determine the precedence of secret retrieval
+     * @param client       the AWS Secrets Manager client for interacting with AWS Secrets Manager
      */
     public SecretsProviderAws(ObjectMapper objectMapper, Integer order, SecretsManagerClient client) {
         super(objectMapper, order);

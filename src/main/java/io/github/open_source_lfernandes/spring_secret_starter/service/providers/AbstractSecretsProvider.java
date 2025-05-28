@@ -47,6 +47,13 @@ public abstract class AbstractSecretsProvider {
      */
     public abstract Optional<SecretDTO> get(String key);
 
+    /**
+     * Converts a secret value to its JSON representation.
+     *
+     * @param secretValue the secret value to convert
+     * @return the JSON string representation of the secret value
+     * @throws UnexpectedInternalErrorException if there is an error during conversion
+     */
     protected String convertSecretValueToJson(Object secretValue) {
         try {
             return objectMapper.writeValueAsString(secretValue);

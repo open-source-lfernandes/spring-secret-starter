@@ -54,7 +54,7 @@ public class SecretsProviderVaultTest {
     void setUpSecret() {
         if (!vaultContainer.isRunning()) {
             vaultContainer.start();
-            waitSeconds(10L);
+            waitSeconds(30L);
         }
         String path = "secret/data/test";
         vaultTemplate.write(path, Map.of("data", Map.of(key, secretValue)));
@@ -68,6 +68,15 @@ public class SecretsProviderVaultTest {
         assertNotNull(optionalSecretDTO);
         assertTrue(optionalSecretDTO.isPresent());
         assertEquals(JsonUtils.convertSecretValueToJson(secretValue), optionalSecretDTO.get().value());
+    }
+
+    @Test
+    public void shouldReturnEmptyOptionalWhenSecretNotFound() {
+        String nonExistentKey = "nonExistentKey";
+        Optional<SecretDTO> optionalSecretDTO = secretsProviderVault.get(nonExistentKey);
+
+        assertNotNull(optionalSecretDTO);
+        assertTrue(optionalSecretDTO.isEmpty());
     }
 
     @SneakyThrows

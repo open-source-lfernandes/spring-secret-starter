@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 })
 @EnableConfigurationProperties(SecretsProperties.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SecretsProviderVaultTest {
+class SecretsProviderVaultTest {
 
     @Container
     private static final VaultContainer<?> vaultContainer = new VaultContainer<>("hashicorp/vault:latest")
@@ -62,7 +62,7 @@ public class SecretsProviderVaultTest {
     }
 
     @Test
-    public void shouldReturnSecretFromVaultCorrectly() {
+    void shouldReturnSecretFromVaultCorrectly() {
         Optional<SecretDTO> optionalSecretDTO = secretsProviderVault.get(key);
 
         assertNotNull(optionalSecretDTO);
@@ -71,12 +71,26 @@ public class SecretsProviderVaultTest {
     }
 
     @Test
-    public void shouldReturnEmptyOptionalWhenSecretNotFound() {
+    void shouldReturnEmptyOptionalWhenSecretNotFound() {
         String nonExistentKey = "nonExistentKey";
         Optional<SecretDTO> optionalSecretDTO = secretsProviderVault.get(nonExistentKey);
 
         assertNotNull(optionalSecretDTO);
         assertTrue(optionalSecretDTO.isEmpty());
+    }
+
+    @Test
+    void shouldUpdatePathSuccess() {
+        String newPath = "secret/data/newTest";
+        secretsProviderVault.updatePath(newPath);
+        vaultTemplate.write(newPath, Map.of("data", Map.of(key, secretValue)));
+
+        Optional<SecretDTO> optionalSecretDTO = secretsProviderVault.get(key);
+
+        assertNotNull(optionalSecretDTO);
+        assertTrue(optionalSecretDTO.isPresent());
+        assertEquals(JsonUtils.convertSecretValueToJson(secretValue), optionalSecretDTO.get().value());
+
     }
 
     @SneakyThrows

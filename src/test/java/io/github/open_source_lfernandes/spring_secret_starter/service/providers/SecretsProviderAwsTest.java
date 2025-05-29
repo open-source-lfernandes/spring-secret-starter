@@ -7,9 +7,8 @@ import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
+import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import io.github.open_source_lfernandes.spring_secret_starter.utils.JsonUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.CreateSecretRequest;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,10 +85,4 @@ class SecretsProviderAwsTest {
         assertEquals(Optional.empty(), secretsProviderAws.get("wrong-key"));
     }
 
-    @Data
-    @AllArgsConstructor
-    private static class Credential implements Serializable {
-        String username;
-        String password;
-    }
 }

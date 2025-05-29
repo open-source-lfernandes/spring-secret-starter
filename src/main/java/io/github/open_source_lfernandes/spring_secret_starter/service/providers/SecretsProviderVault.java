@@ -58,7 +58,7 @@ public class SecretsProviderVault extends AbstractSecretsProvider {
     @Override
     public Optional<SecretDTO> get(String key) {
         final VaultResponse response = vaultTemplate.read(path);
-        Map<String, Object> mapDataKeySecret = (Map<String, Object>) response.getData().get(DEFAULT_KEY_RESPONSE);
+        Map<String, Object> mapDataKeySecret = readMapDataKeySecret(response);
 
         if (mapDataKeySecret.containsKey(key)) {
             return Optional.of(
@@ -69,6 +69,14 @@ public class SecretsProviderVault extends AbstractSecretsProvider {
             );
         }
         return Optional.empty();
+    }
+
+    private Map<String, Object> readMapDataKeySecret(VaultResponse response) {
+        if (response == null || response.getData() == null) {
+            log.error("stage=secret-not-found-in-vault, path={}", path);
+            return Map.of();
+        }
+        return (Map<String, Object>) response.getData().get(DEFAULT_KEY_RESPONSE);
     }
 
     /**

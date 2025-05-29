@@ -62,7 +62,7 @@ public class SecretsProviderVaultTest {
     }
 
     @Test
-    public void shouldReturnSecretFromVaultCorrectly() {
+    void shouldReturnSecretFromVaultCorrectly() {
         Optional<SecretDTO> optionalSecretDTO = secretsProviderVault.get(key);
 
         assertNotNull(optionalSecretDTO);
@@ -71,7 +71,7 @@ public class SecretsProviderVaultTest {
     }
 
     @Test
-    public void shouldReturnEmptyOptionalWhenSecretNotFound() {
+    void shouldReturnEmptyOptionalWhenSecretNotFound() {
         String nonExistentKey = "nonExistentKey";
         Optional<SecretDTO> optionalSecretDTO = secretsProviderVault.get(nonExistentKey);
 

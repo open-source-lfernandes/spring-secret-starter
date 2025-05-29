@@ -1,7 +1,6 @@
 package io.github.open_source_lfernandes.spring_secret_starter.properties;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 

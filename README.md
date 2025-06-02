@@ -33,6 +33,7 @@ Vault, and more.
 - **Custom Providers**: Easily extend with your own secret provider implementations
 - **Provider Order Configuration**: Specify the order in which providers are executed for secret retrieval using
   configuration properties
+- **Type Conversion for Secrets**: Retrieve secrets by key and origin, converting the value to the specified type for seamless integration with your application.
 
 ## Installation
 
@@ -178,7 +179,7 @@ spring:
 
 ## Examples
 
-Accessing Secrets in Code using SecretsManagerService
+### Accessing Secrets in Code using SecretsManagerService
 
 ```java
 public class MyService {
@@ -198,6 +199,39 @@ public class MyService {
         // Getting secret value or failure, only for AWS Secrets Manager
         SecretDTO secretDTO = secretsManagerService.getOrFailure(Origin.AWS, "my-secret-key");
     }
+}
+```
+
+### Retrieving a Secret by Key and Origin with Type Conversion
+
+You can retrieve a secret by its key and origin and convert its value to a specific type using the `SecretsManagerService`. Here's an example:
+
+```java
+import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
+import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
+import io.github.open_source_lfernandes.spring_secret_starter.service.SecretsManagerService;
+
+public class MyService {
+
+  private final SecretsManagerService secretsManagerService;
+
+  public MyService(SecretsManagerService secretsManagerService) {
+    this.secretsManagerService = secretsManagerService;
+  }
+
+  public MyCustomType getCustomSecret() {
+    String key = "my-secret-key";
+    Origin origin = Origin.AWS_SECRETS_MANAGER;
+
+    return secretsManagerService.get(origin, key, MyCustomType.class);
+  }
+}
+
+class MyCustomType {
+  private String field1;
+  private int field2;
+
+  // Getters and setters
 }
 ```
 

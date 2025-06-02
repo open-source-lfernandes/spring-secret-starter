@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
+import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProviderAws;
+import io.github.open_source_lfernandes.spring_secret_starter.utils.JsonUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ class SecretsManagerServiceTest {
     @BeforeEach
     void setUpProviders() {
         final List<AbstractSecretsProvider> providers = List.of(secretsProviderAws, customSecretsProvider);
-        secretsManagerService = new SecretsManagerService(providers);
+        secretsManagerService = new SecretsManagerService(providers, new ObjectMapper());
     }
 
     @Test
@@ -127,6 +129,26 @@ class SecretsManagerServiceTest {
 
         assertNotNull(secretDTO);
         assertEquals(secretDTOExpected.get(), secretDTO);
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldReturnSecretAsObjectSuccess() {
+        final var key = "key";
+        final var credentialExpected = new Credential("lucas", "123456");
+        final var optionalSecretDTO = Optional.of(
+                SecretDTO.builder()
+                        .key(key)
+                        .value(JsonUtils.convertSecretValueToJson(credentialExpected))
+                        .build()
+        );
+        when(secretsProviderAws.getOrigin()).thenReturn(Origin.AWS);
+        when(secretsProviderAws.get(key)).thenReturn(optionalSecretDTO);
+
+        Credential credentialResponseSecret = secretsManagerService.get(Origin.AWS, key, Credential.class);
+
+        assertNotNull(credentialResponseSecret);
+        assertEquals(credentialExpected, credentialResponseSecret);
     }
 
     @Test

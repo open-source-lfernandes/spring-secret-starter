@@ -1,11 +1,16 @@
 package io.github.open_source_lfernandes.spring_secret_starter.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.UnexpectedInternalErrorException;
 import io.github.open_source_lfernandes.spring_secret_starter.messages.Messages;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,13 +21,17 @@ import java.util.stream.Collectors;
  * SecretsManagerService is responsible for managing secrets from different providers.
  * It allows retrieving secrets by key and origin.
  */
+@Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecretsManagerService {
 
     /**
      * The list of secrets providers.
      */
-    private final List<AbstractSecretsProvider> services;
+    List<AbstractSecretsProvider> services;
+
+    ObjectMapper objectMapper;
 
     /**
      * Retrieves a secret by its key from all available providers.
@@ -70,4 +79,41 @@ public class SecretsManagerService {
         return get(origin, key).orElseThrow(() -> new SecretNotFoundException(key));
     }
 
+    /**
+     * Retrieves a secret by its key and origin, converting the value to the specified type.
+     *
+     * @param origin the origin of the secret
+     * @param key    the key of the secret to retrieve
+     * @param type   the class type to convert the secret value to
+     * @param <T>    the type of the secret value
+     * @return the secret value converted to the specified type
+     * @throws SecretNotFoundException if the secret is not found
+     */
+    public <T> T get(Origin origin, String key, Class<T> type) throws SecretNotFoundException {
+        Objects.requireNonNull(origin, Messages.ORIGIN_CANNOT_BE_BULL.getDescription());
+        Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
+        Objects.requireNonNull(type, Messages.TYPE_CANNOT_BE_NULL.getDescription());
+
+        return get(origin, key)
+                .map(SecretDTO::value)
+                .map(value -> convertSecretValueToJson(value, type))
+                .orElseThrow(() -> new SecretNotFoundException(key));
+    }
+
+    /**
+     * Converts the secret value to the specified type using the ObjectMapper.
+     *
+     * @param value the secret value to convert
+     * @param type  the class type to convert the secret value to
+     * @param <T>   the type of the secret value
+     * @return the secret value converted to the specified type
+     */
+    private <T> T convertSecretValueToJson(String value, Class<T> type) {
+        try {
+            return objectMapper.readValue(value, type);
+        } catch (Exception exception) {
+            log.error("Error parsing secret value from JSON: {}", exception.getMessage(), exception);
+            throw new UnexpectedInternalErrorException(Messages.JSON_PARSE_SECRET_VALUE_ERROR.getDescription(), exception);
+        }
+    }
 }

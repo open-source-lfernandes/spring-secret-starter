@@ -108,4 +108,15 @@ publishing {
     }
 }
 
-apply from : "gradle/plugins/jreleaser.gradle"
+// gradle/plugins/jreleaser.gradle
+jreleaser {
+    project {
+        name = 'spring-secret-starter'
+        description = 'A Spring Boot starter for seamless integration with secret management services'
+        authors = ['Lucas Fernandes']
+        license = 'Apache-2.0'
+        links {
+            homepage = 'https://github.com/open-source-lfernandes/spring-secret-starter'
+        }
+    }
+}

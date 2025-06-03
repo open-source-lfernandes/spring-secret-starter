@@ -9,7 +9,7 @@ plugins {
 
 group = 'io.github.open-source-lfernandes'
 description = 'A Spring Boot starter for seamless integration with secret management services like AWS Secrets Manager, HashiCorp Vault, and more.'
-version = '1.1.0'
+version = '1.2.0'
 
 java {
     toolchain {

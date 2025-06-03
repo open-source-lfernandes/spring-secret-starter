@@ -21,6 +21,8 @@ Vault, and more.
 - [Configuration Properties](#configuration-properties)
 - [Specifying Provider Order](#specifying-provider-order)
 - [Examples](#examples)
+    - [Accessing Secrets in Code using SecretsManagerService](#accessing-secrets-in-code-using-secretsmanagerservice)
+    - [Retrieving a Secret by Key and Origin with Type Conversion](#retrieving-a-secret-by-key-and-origin-with-type-conversion)
     - [SecretDTO Explanation](#secretdto-explanation)
 - [Next Steps](#next-steps)
 - [Contributing](#contributing)

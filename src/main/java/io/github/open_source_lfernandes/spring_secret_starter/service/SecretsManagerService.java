@@ -122,7 +122,7 @@ public class SecretsManagerService {
 
         return get(origin, key)
                 .map(SecretDTO::value)
-                .map(value -> convertSecretValueToJson(value, type))
+                .map(value -> convertJsonToSecretValue(value, type))
                 .orElseThrow(() -> new SecretNotFoundException(key));
     }
 
@@ -142,7 +142,7 @@ public class SecretsManagerService {
             try {
                 Optional<SecretDTO> secret = service.get(key);
                 if (secret.isPresent()) {
-                    return convertSecretValueToJson(secret.get().value(), type);
+                    return convertJsonToSecretValue(secret.get().value(), type);
                 }
             } catch (Exception exception) {
                 log.warn("Failed to retrieve secret with key '{}' from provider '{}': {}",
@@ -162,7 +162,7 @@ public class SecretsManagerService {
      * @param <T>   the type of the secret value
      * @return the secret value converted to the specified type
      */
-    private <T> T convertSecretValueToJson(String value, Class<T> type) {
+    private <T> T convertJsonToSecretValue(String value, Class<T> type) {
         try {
             return objectMapper.readValue(value, type);
         } catch (Exception exception) {

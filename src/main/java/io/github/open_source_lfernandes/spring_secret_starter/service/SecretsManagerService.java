@@ -50,6 +50,32 @@ public class SecretsManagerService {
     }
 
     /**
+     * Retrieves a secret by its key from any available provider.
+     * If the secret is found, it returns the first one found.
+     *
+     * @param key the key of the secret to retrieve
+     * @return an Optional containing the SecretDTO object if found, or empty if not found
+     */
+    public Optional<SecretDTO> getFromAnyProvider(String key) {
+        Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
+
+        for (AbstractSecretsProvider service : services) {
+            try {
+                Optional<SecretDTO> secret = service.get(key);
+                if (secret.isPresent()) {
+                    return secret;
+                }
+            } catch (Exception exception) {
+                log.warn("Failed to retrieve secret with key '{}' from provider '{}': {}",
+                        key, service.getOrigin(), exception.getMessage(), exception);
+                // skip to the next provider if an exception occurs
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    /**
      * Retrieves a secret by its key and origin from the specified provider.
      *
      * @param origin the origin of the secret
@@ -98,6 +124,34 @@ public class SecretsManagerService {
                 .map(SecretDTO::value)
                 .map(value -> convertSecretValueToJson(value, type))
                 .orElseThrow(() -> new SecretNotFoundException(key));
+    }
+
+    /**
+     * Retrieves a secret by its key from any available provider, converting the value to the specified type.
+     *
+     * @param key  the key of the secret to retrieve
+     * @param type the class type to convert the secret value to
+     * @param <T>  the type of the secret value
+     * @return the secret value converted to the specified type
+     * @throws SecretNotFoundException if the secret is not found in any provider
+     */
+    public <T> T getFromAnyProvider(String key, Class<T> type) throws SecretNotFoundException {
+        Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
+
+        for (AbstractSecretsProvider service : services) {
+            try {
+                Optional<SecretDTO> secret = service.get(key);
+                if (secret.isPresent()) {
+                    return convertSecretValueToJson(secret.get().value(), type);
+                }
+            } catch (Exception exception) {
+                log.warn("Failed to retrieve secret with key '{}' from provider '{}': {}",
+                        key, service.getOrigin(), exception.getMessage(), exception);
+                // skip to the next provider if an exception occurs
+            }
+        }
+
+        throw new SecretNotFoundException(key);
     }
 
     /**

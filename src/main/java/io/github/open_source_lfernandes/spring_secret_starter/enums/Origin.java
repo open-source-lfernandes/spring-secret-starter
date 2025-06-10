@@ -16,5 +16,9 @@ public enum Origin {
     /**
      * CUSTOM indicates that the secret is sourced from a custom provider.
      */
-    CUSTOM
+    CUSTOM,
+    /**
+     * ANY indicates that the secret can be sourced from any provider.
+     */
+    ANY
 }

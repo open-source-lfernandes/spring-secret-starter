@@ -52,7 +52,7 @@ public class SecretsProviderAws extends AbstractSecretsProvider {
                     SecretDTO.builder()
                             .origin(getOrigin())
                             .key(key)
-                            .value(convertSecretValueToJson(response.secretString()))
+                            .value(response.secretString())
                             .build()
             );
         } catch (ResourceNotFoundException exception) {

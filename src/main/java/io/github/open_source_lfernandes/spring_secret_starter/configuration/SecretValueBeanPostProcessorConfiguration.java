@@ -6,9 +6,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+/**
+ * Configuration class for the SecretValueBeanPostProcessor.
+ * This class registers the SecretValueBeanPostProcessor bean in the Spring context.
+ * It is responsible for processing fields annotated with @SecretValue and injecting secret values.
+ */
 @Configuration
 public class SecretValueBeanPostProcessorConfiguration {
 
+    /**
+     * Creates a SecretValueBeanPostProcessor bean.
+     *
+     * @param environment the Environment instance used to resolve placeholders in secret keys
+     * @param secretsManagerService the SecretsManagerService instance used to retrieve secrets
+     * @return a new instance of SecretValueBeanPostProcessor
+     */
     @Bean
     public SecretValueBeanPostProcessor secretValueBeanPostProcessor(
             Environment environment,

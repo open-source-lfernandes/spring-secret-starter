@@ -56,7 +56,7 @@ class SecretsProviderAwsTest {
                 SecretDTO.builder()
                         .origin(Origin.AWS)
                         .key(keySimpleString)
-                        .value(JsonUtils.convertSecretValueToJson(valueSimpleString))
+                        .value(valueSimpleString)
                         .build()
         );
 
@@ -77,7 +77,7 @@ class SecretsProviderAwsTest {
         assertTrue(secretObjectResponse.isPresent());
 
         assertEquals(optionalSimpleSecretDTO.get(), secretSimpleStringResponse.get());
-        assertEquals(JsonUtils.convertSecretValueToJson(optionalObjectSecretDTO.get().value()), secretObjectResponse.get().value());
+        assertEquals(optionalObjectSecretDTO.get().value(), secretObjectResponse.get().value());
     }
 
     @Test

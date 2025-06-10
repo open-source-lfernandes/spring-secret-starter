@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration(classes = {
         SecretsManagerServiceAutoConfiguration.class,
         SecretValueBeanPostProcessorConfiguration.class,
-        SecretsServiceAwsAutoConfiguration.class,
         ObjectMapperConfiguration.class,
         SecretValueBeanPostProcessorConfigurationTest.CustomSecretsProviderConfiguration.class
 })

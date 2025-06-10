@@ -6,6 +6,7 @@ import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SecretValueBeanPostProcessorConfigurationTest {
 
     static final String CUSTOM_KEY = "secret-key";
+    static final String CUSTOM_VALUE = "value-from-custom-provider";
 
     @SecretValue("${example.secret-key}")
     private String secretValue;
@@ -42,7 +44,7 @@ class SecretValueBeanPostProcessorConfigurationTest {
     @Test
     void contextLoads() {
         // tests configuration startup
-        assertEquals("value-from-custom-provider", secretValue);
+        assertEquals(CUSTOM_VALUE, secretValue);
     }
 
     // Custom Secrets Provider for testing
@@ -62,7 +64,7 @@ class SecretValueBeanPostProcessorConfigurationTest {
                 return Optional.of(SecretDTO.builder()
                         .origin(Origin.CUSTOM)
                         .key(key)
-                        .value("value-from-custom-provider")
+                        .value(CUSTOM_VALUE)
                         .build()
                 );
             }

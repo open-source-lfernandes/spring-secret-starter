@@ -7,8 +7,11 @@ import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.CannotCastTypeException;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
 import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import io.github.open_source_lfernandes.spring_secret_starter.utils.JsonUtils;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -81,8 +84,26 @@ class SecretsProviderAwsTest {
     }
 
     @Test
+    @SneakyThrows
+    void shouldReturnSecretFromClientAwsWithCast() {
+        Credential credentialResponse = secretsProviderAws.get(keyObject, Credential.class);
+        assertNotNull(credentialResponse);
+        assertEquals(valueObject, credentialResponse);
+    }
+
+    @Test
+    void shouldThrowCannotTypeCastWithInvalidType() {
+        assertThrows(CannotCastTypeException.class, () -> secretsProviderAws.get(keySimpleString, Credential.class));
+    }
+
+    @Test
     void shouldNotReturnSecretFromClientAws() {
         assertEquals(Optional.empty(), secretsProviderAws.get("wrong-key"));
+    }
+
+    @Test
+    void shouldNotReturnSecretFromClientAwsWithCast() {
+        assertThrows(SecretNotFoundException.class, () -> secretsProviderAws.get("wrong-key", Credential.class));
     }
 
 }

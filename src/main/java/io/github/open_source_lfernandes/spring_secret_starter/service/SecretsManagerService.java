@@ -3,8 +3,9 @@ package io.github.open_source_lfernandes.spring_secret_starter.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.OriginRequestedNotProvidedException;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
-import io.github.open_source_lfernandes.spring_secret_starter.exceptions.UnexpectedInternalErrorException;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.CannotCastTypeException;
 import io.github.open_source_lfernandes.spring_secret_starter.messages.Messages;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import lombok.AccessLevel;
@@ -120,10 +121,13 @@ public class SecretsManagerService {
         Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
         Objects.requireNonNull(type, Messages.TYPE_CANNOT_BE_NULL.getDescription());
 
-        return get(origin, key)
-                .map(SecretDTO::value)
-                .map(value -> convertJsonStringToTypeInstance(value, type))
-                .orElseThrow(() -> new SecretNotFoundException(key));
+        for (AbstractSecretsProvider service : services) {
+            if (service.getOrigin().equals(origin)) {
+                return service.get(key, type);
+            }
+        }
+
+        throw new OriginRequestedNotProvidedException(Messages.ORIGIN_REQUESTED_NOT_PROVIDED.getDescription());
     }
 
     /**
@@ -167,7 +171,7 @@ public class SecretsManagerService {
             return objectMapper.readValue(value, type);
         } catch (Exception exception) {
             log.error("Error parsing secret value from JSON: {}", exception.getMessage(), exception);
-            throw new UnexpectedInternalErrorException(Messages.JSON_PARSE_SECRET_VALUE_ERROR.getDescription(), exception);
+            throw new CannotCastTypeException(exception);
         }
     }
 }

@@ -4,16 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.annotations.SecretValue;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -68,6 +66,11 @@ class SecretValueBeanPostProcessorConfigurationTest {
                 );
             }
             return Optional.empty();
+        }
+
+        @Override
+        public <T> T get(String key, Class<T> type) throws SecretNotFoundException {
+            return null;
         }
     }
 

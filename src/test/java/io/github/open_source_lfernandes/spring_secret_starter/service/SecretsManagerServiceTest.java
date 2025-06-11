@@ -138,14 +138,9 @@ class SecretsManagerServiceTest {
     void shouldReturnSecretAsObjectSuccess() {
         final var key = "key";
         final var credentialExpected = new Credential("lucas", "123456");
-        final var optionalSecretDTO = Optional.of(
-                SecretDTO.builder()
-                        .key(key)
-                        .value(JsonUtils.convertSecretValueToJson(credentialExpected))
-                        .build()
-        );
+
         when(secretsProviderAws.getOrigin()).thenReturn(Origin.AWS);
-        when(secretsProviderAws.get(key)).thenReturn(optionalSecretDTO);
+        when(secretsProviderAws.get(key, Credential.class)).thenReturn(credentialExpected);
 
         Credential credentialResponseSecret = secretsManagerService.get(Origin.AWS, key, Credential.class);
 
@@ -247,6 +242,11 @@ class SecretsManagerServiceTest {
                 );
             }
             return Optional.empty();
+        }
+
+        @Override
+        public <T> T get(String key, Class<T> type) throws SecretNotFoundException {
+            return null;
         }
     }
 }

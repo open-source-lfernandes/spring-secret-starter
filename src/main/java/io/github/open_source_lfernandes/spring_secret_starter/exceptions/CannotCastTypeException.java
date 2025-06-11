@@ -10,7 +10,9 @@ import io.github.open_source_lfernandes.spring_secret_starter.messages.Messages;
 public class CannotCastTypeException extends RuntimeException {
 
     /**
-     * Constructs a new CannotCastTypeException with the specified detail message.
+     * Constructs a CannotCastTypeException with a default error message.
+     * This constructor is used when the exception is thrown without a specific cause.
+     * @param cause the cause of the exception, typically another Throwable that caused this exception to be thrown
      */
     public CannotCastTypeException(Throwable cause) {
         super(Messages.JSON_PARSE_SECRET_VALUE_ERROR.getDescription(), cause);

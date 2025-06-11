@@ -25,6 +25,12 @@ import java.util.Optional;
 public class SecretsProviderVault extends AbstractSecretsProvider {
 
     /**
+     * Default path for storing secrets in Vault.
+     * This is the standard path used by Vault's KV (Key-Value) secrets engine.
+     */
+    private static final String DEFAULT_PREFIX_PATH = "secret/data/";
+
+    /**
      * Default key for the response data in Vault.
      */
     private static final String DEFAULT_KEY_RESPONSE = "data";
@@ -113,11 +119,11 @@ public class SecretsProviderVault extends AbstractSecretsProvider {
 
     /**
      * Updates the path in Vault where secrets are stored.
-     *
-     * @param path the new path in Vault
+     * By default, the path is prefixed with "secret/data/".
+     * @param path the new path to set
      */
     public void updatePath(String path) {
-        this.path = path;
+        this.path = DEFAULT_PREFIX_PATH.concat(path);
     }
 
 }

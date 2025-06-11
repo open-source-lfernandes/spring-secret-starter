@@ -88,11 +88,11 @@ class SecretsProviderVaultTest {
     @Test
     @SneakyThrows
     void shouldUpdatePathSuccess() {
-        String newPath = "secret/data/newTest";
+        String newPath = "newTest";
         String keyObject = "credential";
 
         secretsProviderVault.updatePath(newPath);
-        vaultTemplate.write(newPath, Map.of("data", Map.of(keyObject, JsonUtils.convertSecretValueToJson(valueObject))));
+        vaultTemplate.write("secret/data/" + newPath, Map.of("data", Map.of(keyObject, JsonUtils.convertSecretValueToJson(valueObject))));
 
         var secretResponse = secretsProviderVault.get(keyObject, Credential.class);
         assertNotNull(secretResponse);

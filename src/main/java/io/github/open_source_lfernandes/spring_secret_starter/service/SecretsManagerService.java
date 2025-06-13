@@ -144,10 +144,7 @@ public class SecretsManagerService {
 
         for (AbstractSecretsProvider service : services) {
             try {
-                Optional<SecretDTO> secret = service.get(key);
-                if (secret.isPresent()) {
-                    return convertJsonStringToTypeInstance(secret.get().value(), type);
-                }
+                return service.get(key, type);
             } catch (Exception exception) {
                 log.warn("Failed to retrieve secret with key '{}' from provider '{}': {}",
                         key, service.getOrigin(), exception.getMessage(), exception);

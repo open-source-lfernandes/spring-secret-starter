@@ -28,4 +28,12 @@ public @interface SecretValue {
      * @return the origin of the secret
      */
     Origin origin() default Origin.ANY;
+
+    /**
+     * The type to which the secret value should be converted.
+     * Default is String.class, meaning the secret will be injected as a String.
+     *
+     * @return the Class type to convert the secret value to
+     */
+    Class<?> type() default String.class;
 }

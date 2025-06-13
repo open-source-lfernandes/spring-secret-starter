@@ -32,6 +32,10 @@ public enum Messages {
      */
     SECRET_NOT_FOUND("Secret not found"),
     /**
+     * Error message for when the secret value is not provided by injection.
+     */
+    CANNOT_INJECT_SECRET_VALUE("Cannot inject secret value"),
+    /**
      * Error message for when the origin requested is not provided.
      */
     ORIGIN_REQUESTED_NOT_PROVIDED("Origin requested not provided");

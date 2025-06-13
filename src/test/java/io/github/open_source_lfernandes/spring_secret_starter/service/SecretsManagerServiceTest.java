@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
-import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProviderAws;
-import io.github.open_source_lfernandes.spring_secret_starter.utils.JsonUtils;
+import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -208,13 +207,8 @@ class SecretsManagerServiceTest {
     void shouldReturnSecretFromAnyProviderWithCast() {
         final var key = "key";
         final var credentialExpected = new Credential("lucas", "123456");
-        final var secretDTOExpected = SecretDTO.builder()
-                .origin(Origin.AWS)
-                .key(key)
-                .value(JsonUtils.convertSecretValueToJson(credentialExpected))
-                .build();
 
-        when(secretsProviderAws.get(key)).thenReturn(Optional.of(secretDTOExpected));
+        when(secretsProviderAws.get(key, Credential.class)).thenReturn(credentialExpected);
         var credential = secretsManagerService.getFromAnyProvider(key, Credential.class);
         assertNotNull(credential);
         assertEquals(credentialExpected, credential);

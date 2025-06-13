@@ -7,6 +7,7 @@ import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
+import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,14 +35,19 @@ class SecretValueBeanPostProcessorConfigurationTest {
 
     static final String CUSTOM_KEY = "secret-key";
     static final String CUSTOM_VALUE = "value-from-custom-provider";
+    static final String CUSTOM_OBJECT_KEY = "secret-object-key";
+    static final Credential CUSTOM_OBJECT_VALUE_CREDENTIAL = new Credential("customUser", "customPassword");
 
     @SecretValue("${example.secret-key}")
     private String secretValue;
+    @SecretValue(value = "${example.credential}", type = Credential.class)
+    private Credential secretCredentialValue;
 
     @Test
     void contextLoads() {
         // tests configuration startup
         assertEquals(CUSTOM_VALUE, secretValue);
+        assertEquals(CUSTOM_OBJECT_VALUE_CREDENTIAL, secretCredentialValue);
     }
 
     // Custom Secrets Provider for testing
@@ -70,7 +76,10 @@ class SecretValueBeanPostProcessorConfigurationTest {
 
         @Override
         public <T> T get(String key, Class<T> type) throws SecretNotFoundException {
-            return null;
+            if (CUSTOM_OBJECT_KEY.equals(key)) {
+                return (T) CUSTOM_OBJECT_VALUE_CREDENTIAL;
+            }
+            throw new SecretNotFoundException(key);
         }
     }
 

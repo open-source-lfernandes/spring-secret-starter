@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
-import io.github.open_source_lfernandes.spring_secret_starter.exceptions.UnexpectedInternalErrorException;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.CannotCastTypeException;
 import io.github.open_source_lfernandes.spring_secret_starter.messages.Messages;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -48,18 +49,30 @@ public abstract class AbstractSecretsProvider {
     public abstract Optional<SecretDTO> get(String key);
 
     /**
-     * Converts a secret value to its JSON representation.
+     * Retrieves the value of a secret by its key and converts it to the specified type.
      *
-     * @param secretValue the secret value to convert
-     * @return the JSON string representation of the secret value
-     * @throws UnexpectedInternalErrorException if there is an error during conversion
+     * @param key  the key of the secret to retrieve
+     * @param type the Class type to convert the secret value to
+     * @param <T>  the type of the secret value
+     * @return the value of the secret converted to the specified type
+     * @throws SecretNotFoundException if the secret is not found
      */
-    protected String convertSecretValueToJson(Object secretValue) {
+    public abstract <T> T get(String key, Class<T> type) throws SecretNotFoundException;
+
+    /**
+     * Converts a secret value to the specified type.
+     *
+     * @param value the secret value to convert
+     * @param type  the Class type to convert the secret value to
+     * @param <T>   the type of the secret value
+     * @return the value of the secret converted to the specified type
+     */
+    protected <T> T convertJsonStringToTypeInstance(String value, Class<T> type) {
         try {
-            return objectMapper.writeValueAsString(secretValue);
+            return getObjectMapper().readValue(value, type);
         } catch (JsonProcessingException e) {
-            log.error("Error parsing secret value to JSON: {}", e.getMessage(), e);
-            throw new UnexpectedInternalErrorException(Messages.JSON_PARSE_SECRET_VALUE_ERROR.getDescription(), e);
+            log.error("Error parsing secret value from JSON: {}", e.getMessage(), e);
+            throw new CannotCastTypeException(e);
         }
     }
 }

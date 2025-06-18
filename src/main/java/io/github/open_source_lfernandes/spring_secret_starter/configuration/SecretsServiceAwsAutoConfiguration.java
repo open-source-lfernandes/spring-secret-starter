@@ -46,7 +46,7 @@ public class SecretsServiceAwsAutoConfiguration {
      */
     @PostConstruct
     public void postConstruct() {
-        log.info("Secret-Manager-AWS-Initiated, enabled={}, region={}, endpoint={}, order={}",
+        log.info("Secret-Manager-AWS-Provider-Initiated, enabled={}, region={}, endpoint={}, order={}",
                 props.aws().secretsManager().getEnabled(),
                 props.aws().secretsManager().getRegion(), props.aws().secretsManager().getEndpoint(),
                 props.aws().secretsManager().getOrder());

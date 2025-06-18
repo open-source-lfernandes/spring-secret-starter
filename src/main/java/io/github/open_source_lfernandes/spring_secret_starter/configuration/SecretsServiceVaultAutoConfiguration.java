@@ -3,7 +3,9 @@ package io.github.open_source_lfernandes.spring_secret_starter.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.properties.SecretsProperties;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProviderVault;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,6 +23,7 @@ import java.util.Objects;
  * using HashiCorp Vault.
  * It is conditionally enabled based on the properties defined in SecretsProperties.
  */
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(SecretsProperties.class)
@@ -36,6 +39,18 @@ public class SecretsServiceVaultAutoConfiguration {
      * The ObjectMapper instance used for serializing and deserializing JSON data.
      */
     private final ObjectMapper objectMapper;
+
+    /**
+     * Post construct method to log the initialization of the Vault provider.
+     */
+    @PostConstruct
+    public void postConstruct() {
+        log.info("Vault-Provider-Initiated, enabled={}, uri={}, order={}, path={}",
+                props.vault().getEnabled(),
+                props.vault().getUri(),
+                props.vault().getOrder(),
+                props.vault().getPath());
+    }
 
     /**
      * Creates a VaultTemplate bean if it is not already defined in the application context.

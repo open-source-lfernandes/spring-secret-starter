@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
-import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.SecretsProviderAws;
-import io.github.open_source_lfernandes.spring_secret_starter.utils.JsonUtils;
+import io.github.open_source_lfernandes.spring_secret_starter.utils.faker.Credential;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 class SecretsManagerServiceTest {
 
+    final static String CUSTOM_KEY = "custom-key";
+    final static String CUSTOM_SECRET_VALUE = "custom-value";
+
     SecretsManagerService secretsManagerService;
 
     @Mock
@@ -41,10 +43,9 @@ class SecretsManagerServiceTest {
 
     @Test
     void shouldReturnSecretFromList() {
-        final var key = "key";
         final var secretDTOAwsExpected = SecretDTO.builder()
                 .origin(Origin.AWS)
-                .key(key)
+                .key(CUSTOM_KEY)
                 .value("secret")
                 .build();
 
@@ -52,13 +53,13 @@ class SecretsManagerServiceTest {
                 secretDTOAwsExpected,
                 SecretDTO.builder()
                         .origin(Origin.CUSTOM)
-                        .key(key)
+                        .key(CUSTOM_KEY)
                         .value("custom-value")
                         .build()
         );
-        when(secretsProviderAws.get(key)).thenReturn(Optional.of(secretDTOAwsExpected));
+        when(secretsProviderAws.get(CUSTOM_KEY)).thenReturn(Optional.of(secretDTOAwsExpected));
 
-        List<SecretDTO> setKeysResponse = secretsManagerService.get(key);
+        List<SecretDTO> setKeysResponse = secretsManagerService.get(CUSTOM_KEY);
 
         assertThat(setKeysResponse)
                 .isNotEmpty()
@@ -70,14 +71,14 @@ class SecretsManagerServiceTest {
         final List<SecretDTO> listExpected = List.of(
                 SecretDTO.builder()
                         .origin(Origin.CUSTOM)
-                        .key("key")
-                        .value("custom-value")
+                        .key(CUSTOM_KEY)
+                        .value(CUSTOM_SECRET_VALUE)
                         .build()
         );
 
         when(secretsProviderAws.get(anyString())).thenReturn(Optional.empty());
 
-        List<SecretDTO> setKeysResponse = secretsManagerService.get("key");
+        List<SecretDTO> setKeysResponse = secretsManagerService.get(CUSTOM_KEY);
 
         assertThat(setKeysResponse)
                 .isNotEmpty()
@@ -136,14 +137,9 @@ class SecretsManagerServiceTest {
     void shouldReturnSecretAsObjectSuccess() {
         final var key = "key";
         final var credentialExpected = new Credential("lucas", "123456");
-        final var optionalSecretDTO = Optional.of(
-                SecretDTO.builder()
-                        .key(key)
-                        .value(JsonUtils.convertSecretValueToJson(credentialExpected))
-                        .build()
-        );
+
         when(secretsProviderAws.getOrigin()).thenReturn(Origin.AWS);
-        when(secretsProviderAws.get(key)).thenReturn(optionalSecretDTO);
+        when(secretsProviderAws.get(key, Credential.class)).thenReturn(credentialExpected);
 
         Credential credentialResponseSecret = secretsManagerService.get(Origin.AWS, key, Credential.class);
 
@@ -159,6 +155,65 @@ class SecretsManagerServiceTest {
         assertThrows(SecretNotFoundException.class, () -> secretsManagerService.getOrFailure(Origin.AWS, "key"));
     }
 
+    @Test
+    void shouldReturnSecretFromAnyProviderAws() {
+        final var key = "key";
+        final var secretDTOExpected = Optional.of(
+                SecretDTO.builder()
+                        .origin(Origin.AWS)
+                        .key(key)
+                        .value("secret")
+                        .build()
+        );
+
+        when(secretsProviderAws.get(key)).thenReturn(secretDTOExpected);
+
+        var optionalSecretDTO = secretsManagerService.getFromAnyProvider(key);
+
+        assertNotNull(optionalSecretDTO);
+        assertTrue(optionalSecretDTO.isPresent());
+        assertEquals(secretDTOExpected.get(), optionalSecretDTO.get());
+    }
+
+    @Test
+    void shouldReturnSecretFromAnyProviderCustom() {
+        final var secretDTOExpected = Optional.of(
+                SecretDTO.builder()
+                        .origin(Origin.CUSTOM)
+                        .key(CUSTOM_KEY)
+                        .value(CUSTOM_SECRET_VALUE)
+                        .build()
+        );
+
+        when(secretsProviderAws.get(CUSTOM_KEY)).thenReturn(Optional.empty());
+
+        var optionalSecretDTO = secretsManagerService.getFromAnyProvider(CUSTOM_KEY);
+        assertNotNull(optionalSecretDTO);
+        assertTrue(optionalSecretDTO.isPresent());
+        assertEquals(secretDTOExpected.get(), optionalSecretDTO.get());
+    }
+
+    @Test
+    void shouldReturnEmptySecretFromAnyProvider() {
+        when(secretsProviderAws.get(anyString())).thenReturn(Optional.empty());
+
+        var optionalSecretDTO = secretsManagerService.getFromAnyProvider("wrong-key");
+        assertNotNull(optionalSecretDTO);
+        assertTrue(optionalSecretDTO.isEmpty());
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldReturnSecretFromAnyProviderWithCast() {
+        final var key = "key";
+        final var credentialExpected = new Credential("lucas", "123456");
+
+        when(secretsProviderAws.get(key, Credential.class)).thenReturn(credentialExpected);
+        var credential = secretsManagerService.getFromAnyProvider(key, Credential.class);
+        assertNotNull(credential);
+        assertEquals(credentialExpected, credential);
+    }
+
     static class CustomSecretsProvider extends AbstractSecretsProvider {
 
         public CustomSecretsProvider(Integer order) {
@@ -172,12 +227,20 @@ class SecretsManagerServiceTest {
 
         @Override
         public Optional<SecretDTO> get(String key) {
-            return Optional.of(SecretDTO.builder()
-                    .origin(Origin.CUSTOM)
-                    .key(key)
-                    .value("custom-value")
-                    .build()
-            );
+            if (CUSTOM_KEY.equals(key)) {
+                return Optional.of(SecretDTO.builder()
+                        .origin(Origin.CUSTOM)
+                        .key(key)
+                        .value(CUSTOM_SECRET_VALUE)
+                        .build()
+                );
+            }
+            return Optional.empty();
+        }
+
+        @Override
+        public <T> T get(String key, Class<T> type) throws SecretNotFoundException {
+            return null;
         }
     }
 }

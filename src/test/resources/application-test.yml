@@ -12,3 +12,7 @@ spring:
       uri: http://localhost:8200
       token: testtoken
       path: secret/data/test
+
+example:
+  credential: secret-object-key
+  secret-key: secret-key

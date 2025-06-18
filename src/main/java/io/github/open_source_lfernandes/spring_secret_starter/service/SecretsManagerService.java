@@ -3,8 +3,9 @@ package io.github.open_source_lfernandes.spring_secret_starter.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.open_source_lfernandes.spring_secret_starter.dto.SecretDTO;
 import io.github.open_source_lfernandes.spring_secret_starter.enums.Origin;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.OriginRequestedNotProvidedException;
 import io.github.open_source_lfernandes.spring_secret_starter.exceptions.SecretNotFoundException;
-import io.github.open_source_lfernandes.spring_secret_starter.exceptions.UnexpectedInternalErrorException;
+import io.github.open_source_lfernandes.spring_secret_starter.exceptions.CannotCastTypeException;
 import io.github.open_source_lfernandes.spring_secret_starter.messages.Messages;
 import io.github.open_source_lfernandes.spring_secret_starter.service.providers.AbstractSecretsProvider;
 import lombok.AccessLevel;
@@ -47,6 +48,32 @@ public class SecretsManagerService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a secret by its key from any available provider.
+     * If the secret is found, it returns the first one found.
+     *
+     * @param key the key of the secret to retrieve
+     * @return an Optional containing the SecretDTO object if found, or empty if not found
+     */
+    public Optional<SecretDTO> getFromAnyProvider(String key) {
+        Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
+
+        for (AbstractSecretsProvider service : services) {
+            try {
+                Optional<SecretDTO> secret = service.get(key);
+                if (secret.isPresent()) {
+                    return secret;
+                }
+            } catch (Exception exception) {
+                log.warn("Failed to retrieve secret with key '{}' from provider '{}': {}",
+                        key, service.getOrigin(), exception.getMessage(), exception);
+                // skip to the next provider if an exception occurs
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -94,10 +121,38 @@ public class SecretsManagerService {
         Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
         Objects.requireNonNull(type, Messages.TYPE_CANNOT_BE_NULL.getDescription());
 
-        return get(origin, key)
-                .map(SecretDTO::value)
-                .map(value -> convertSecretValueToJson(value, type))
-                .orElseThrow(() -> new SecretNotFoundException(key));
+        for (AbstractSecretsProvider service : services) {
+            if (service.getOrigin().equals(origin)) {
+                return service.get(key, type);
+            }
+        }
+
+        throw new OriginRequestedNotProvidedException(Messages.ORIGIN_REQUESTED_NOT_PROVIDED.getDescription());
+    }
+
+    /**
+     * Retrieves a secret by its key from any available provider, converting the value to the specified type.
+     *
+     * @param key  the key of the secret to retrieve
+     * @param type the class type to convert the secret value to
+     * @param <T>  the type of the secret value
+     * @return the secret value converted to the specified type
+     * @throws SecretNotFoundException if the secret is not found in any provider
+     */
+    public <T> T getFromAnyProvider(String key, Class<T> type) throws SecretNotFoundException {
+        Objects.requireNonNull(key, Messages.KEY_CANNOT_BE_NULL.getDescription());
+
+        for (AbstractSecretsProvider service : services) {
+            try {
+                return service.get(key, type);
+            } catch (Exception exception) {
+                log.warn("Failed to retrieve secret with key '{}' from provider '{}': {}",
+                        key, service.getOrigin(), exception.getMessage(), exception);
+                // skip to the next provider if an exception occurs
+            }
+        }
+
+        throw new SecretNotFoundException(key);
     }
 
     /**
@@ -108,12 +163,12 @@ public class SecretsManagerService {
      * @param <T>   the type of the secret value
      * @return the secret value converted to the specified type
      */
-    private <T> T convertSecretValueToJson(String value, Class<T> type) {
+    private <T> T convertJsonStringToTypeInstance(String value, Class<T> type) {
         try {
             return objectMapper.readValue(value, type);
         } catch (Exception exception) {
             log.error("Error parsing secret value from JSON: {}", exception.getMessage(), exception);
-            throw new UnexpectedInternalErrorException(Messages.JSON_PARSE_SECRET_VALUE_ERROR.getDescription(), exception);
+            throw new CannotCastTypeException(exception);
         }
     }
 }

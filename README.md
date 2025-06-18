@@ -36,6 +36,7 @@ Vault, and more.
 - **Provider Order Configuration**: Specify the order in which providers are executed for secret retrieval using
   configuration properties
 - **Type Conversion for Secrets**: Retrieve secrets by key and origin, converting the value to the specified type for seamless integration with your application.
+- **@SecretValue Annotation**: Annotate fields to automatically inject secrets from the configured providers
 
 ## Installation
 
@@ -141,6 +142,50 @@ public class SecretsProviderCustom extends AbstractSecretsProvider {
 }
 
 ```
+
+### Using `@SecretValue` Annotation
+
+The `@SecretValue` annotation allows you to inject secret values directly into your Spring beans. It simplifies the process of retrieving secrets by automatically resolving and injecting them from the configured secret providers.
+
+#### Example 1: Injecting a String Secret
+```java
+import io.github.open_source_lfernandes.spring_secret_starter.annotations.SecretValue;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyComponent {
+
+  @SecretValue("${example.secret-key}")
+  private String secretValue;
+
+  public void printSecret() {
+    System.out.println("Secret Value: " + secretValue);
+  }
+}
+```
+
+#### Example 1: Injecting a Custom Object Secret
+```java
+import io.github.open_source_lfernandes.spring_secret_starter.annotations.SecretValue;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyComponent {
+
+  @SecretValue(value = "${example.credential}", type = Credential.class)
+  private Credential credential;
+
+  public void printCredential() {
+    System.out.println("Username: " + credential.getUsername());
+    System.out.println("Password: " + credential.getPassword());
+  }
+}
+```
+
+#### How It Works
+- The @SecretValue annotation retrieves the secret value from the configured providers based on the key specified in the value attribute.
+- The type attribute allows you to specify the class type for type conversion (default is String).
+- The secret is automatically injected into the annotated field during the Spring context initialization.
 
 ## Configuration Properties
 

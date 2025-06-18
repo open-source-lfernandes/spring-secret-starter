@@ -47,14 +47,14 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.open-source-lfernandes</groupId>
     <artifactId>spring-secret-starter</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
 Or for Gradle:
 
 ```groovy
-implementation 'io.github.open-source-lfernandes:spring-secret-starter:1.2.0'
+implementation 'io.github.open-source-lfernandes:spring-secret-starter:1.3.0'
 ```
 
 ## Providers

@@ -52,7 +52,6 @@ public class SecretValueBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         Class<?> clazz = bean.getClass();
         processFields(bean, clazz);
-        processMethods(bean, clazz);
         return bean;
     }
 
@@ -71,28 +70,6 @@ public class SecretValueBeanPostProcessor implements BeanPostProcessor {
                 try {
                     Object secret = getSecretFromProviders(key, annotation.origin(), annotation.type());
                     injectValue(bean, field, secret);
-                } catch (SecretNotFoundException secretNotFoundException) {
-                    throw new CannotInjectSecretValueException(secretNotFoundException);
-                }
-            }
-        }
-    }
-
-    /**
-     * Processes methods of the bean that are annotated with @SecretValue.
-     * It retrieves the secret value from the SecretsManagerService and injects it into the method parameter.
-     *
-     * @param bean  the bean instance being processed
-     * @param clazz the class type of the bean
-     */
-    private void processMethods(Object bean, Class<?> clazz) {
-        for (Method method : clazz.getDeclaredMethods()) {
-            SecretValue annotation = method.getAnnotation(SecretValue.class);
-            if (nonNull(annotation)) {
-                String key = resolveKey(annotation.value());
-                try {
-                    Object secret = getSecretFromProviders(key, annotation.origin(), annotation.type());
-                    injectValue(bean, method, secret);
                 } catch (SecretNotFoundException secretNotFoundException) {
                     throw new CannotInjectSecretValueException(secretNotFoundException);
                 }
@@ -150,22 +127,6 @@ public class SecretValueBeanPostProcessor implements BeanPostProcessor {
             field.set(bean, value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to inject secret into field " + field.getName(), e);
-        }
-    }
-
-    /**
-     * Injects the secret value into the specified method parameter of the bean.
-     *
-     * @param bean   the bean instance
-     * @param method the method to inject the secret value into
-     * @param value  the secret value to inject
-     */
-    private void injectValue(Object bean, Method method, Object value) {
-        try {
-            method.setAccessible(true);
-            method.invoke(bean, value);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to inject secret into method " + method.getName(), e);
         }
     }
 
